@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { apiAuthenticated } from "../../http";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -50,6 +50,7 @@ const Message = () => {
 
   return (
     <div className="min-h-screen p-8 bg-gray-100">
+      <ToastContainer />
       <h2 className="text-2xl font-semibold text-gray-800 mb-6 mt-10">
         Message List
       </h2>
@@ -77,15 +78,20 @@ const Message = () => {
                       <td className="p-4">{msg.emailAddress}</td>
                       <td className="p-4">{msg.phoneNumber}</td>
                       <td className="p-4">{msg.message}</td>
-                   
+
                       <td className="p-4">
                         <div className="flex gap-2 items-center">
                           {/* Delete Button */}
                           <button
-                            onClick={() =>
-                              window.confirm("Are you sure you want to delete this message?") &&
-                              deleteMessage(msg.id)
-                            }
+                            type="button"
+                            onClick={async () => {
+                              const confirmed = window.confirm(
+                                "Are you sure you want to delete this message?"
+                              );
+                              if (confirmed) {
+                                await deleteMessage(msg.id); 
+                              }
+                            }}
                             className="p-2 rounded-full bg-white group transition-all duration-500 hover:bg-red-600 flex items-center hover:cursor-pointer"
                           >
                             <svg
@@ -106,7 +112,7 @@ const Message = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={8} className="p-4 text-center text-gray-500">
+                    <td colSpan={8} className="p-4 text-center text-red-500 text-base">
                       No Messages found.
                     </td>
                   </tr>

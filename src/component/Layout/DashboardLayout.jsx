@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { apiAuthenticated } from "../../http";
-import logo5 from "../../assets/login.jpg";
 
 const DashboardLayout = () => {
   const navigate = useNavigate();
@@ -46,7 +45,7 @@ const DashboardLayout = () => {
         />
       ),
     },
-       {
+    {
       name: "View Admission",
       path: "/admin/view/admission",
       icon: (
@@ -58,7 +57,7 @@ const DashboardLayout = () => {
         />
       ),
     },
-       {
+    {
       name: "View Message",
       path: "/admin/view/message",
       icon: (
@@ -117,12 +116,16 @@ const DashboardLayout = () => {
   return (
     <div className="bg-gray-100 h-screen flex">
       <aside className="w-16 md:w-64 bg-white shadow-md flex flex-col overflow-y-auto">
-        <div className="p-4 border-b">
-          <div className="flex flex-col items-center md:items-start">
-            <img src={logo5} alt="Logo" className="h-12 w-auto mb-2" />
-            <span className="text-lg font-semibold text-gray-800">
-              Admin Dashboard
-            </span>
+        <div className="p-6 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-md rounded-md mb-6">
+          <div className="flex flex-col md:flex-row items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div>
+                <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+                <p className="text-sm text-white/80">
+                  Manage news, messages & admission
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -130,7 +133,7 @@ const DashboardLayout = () => {
           {/* Business Operations */}
           <div>
             <h3 className="px-2 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              Company Operations
+              School Operations
             </h3>
             {menuItems.map((item, idx) => (
               <div key={idx}>

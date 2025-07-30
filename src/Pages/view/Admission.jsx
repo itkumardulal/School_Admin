@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { apiAuthenticated } from "../../http";
 
@@ -37,7 +37,9 @@ const Admission = () => {
 
   const deleteAdmission = async (admissionId) => {
     try {
-      const response = await apiAuthenticated.delete(`admissions/${admissionId}`);
+      const response = await apiAuthenticated.delete(
+        `admission/${admissionId}`
+      );
       if (response.status === 200) {
         toast.success("Admission deleted successfully!");
         setAdmissions((prev) => prev.filter((a) => a.id !== admissionId));
@@ -56,6 +58,7 @@ const Admission = () => {
 
   return (
     <div className="min-h-screen p-8 bg-gray-100">
+      <ToastContainer/>
       <h2 className="text-2xl font-semibold text-gray-800 mb-6 mt-10">
         Admission List
       </h2>
@@ -90,16 +93,20 @@ const Admission = () => {
                       <td className="p-4">{admission.additionalInformation}</td>
                       <td className="p-4">
                         <div className="flex gap-2 items-center">
-                      
                           {/* Delete Button */}
                           <button
-                            onClick={() =>
-                              window.confirm("Are you sure you want to delete this admission?") &&
-                              deleteAdmission(admission.id)
-                            }
+                            type="button"
+                            onClick={async () => {
+                              const confirmed = window.confirm(
+                                "Are you sure you want to delete this admission?"
+                              );
+                              if (confirmed) {
+                                await deleteAdmission(admission.id);
+                              }
+                            }}
                             className="p-2 rounded-full bg-white group transition-all duration-500 hover:bg-red-600 flex items-center hover:cursor-pointer"
                           >
-                             <svg
+                            <svg
                               className="w-5 h-5 text-red-500 group-hover:text-white"
                               fill="currentColor"
                               viewBox="0 0 20 20"
@@ -117,7 +124,7 @@ const Admission = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={13} className="p-4 text-center text-gray-500">
+                    <td colSpan={13} className="p-4 text-center text-red-500 text-base">
                       No Admission Data found.
                     </td>
                   </tr>
@@ -132,8 +139,3 @@ const Admission = () => {
 };
 
 export default Admission;
-
-
-
-
-                           
