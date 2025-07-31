@@ -18,6 +18,7 @@ import ViewNews from "./Pages/view/News";
 import NewsEdit from "./Pages/edit/EditNews";
 import Admission from "./Pages/view/Admission";
 import Message from "./Pages/view/Message";
+import Home from "./component/Home";
 
 const App = () => {
   const [role, setRole] = useState(null);
@@ -37,6 +38,7 @@ const App = () => {
             </Protect>
           }
         >
+          <Route index element={<Home/>} />
           <Route path="add/news" element={<News />} />
          <Route path="view/news" element={<ViewNews/>} />
          <Route path="edit/news/:id" element={<NewsEdit/>} />
