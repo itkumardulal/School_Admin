@@ -8,7 +8,7 @@ const Home = () => {
   const buttons = [
     { label: "Add News", color: "bg-purple-600 hover:bg-purple-700", path: "/admin/add/news" },
     { label: "View Admission", color: "bg-blue-600 hover:bg-blue-700", path: "/admin/view/admission" },
-    { label: "Add Message", color: "bg-green-600 hover:bg-green-700", path: "/admin/view/message" },
+    { label: "Add Notice", color: "bg-green-600 hover:bg-green-700", path: "/admin/add/notices" },
   ];
 
   return (

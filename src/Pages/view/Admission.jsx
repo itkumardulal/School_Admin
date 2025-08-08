@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { apiAuthenticated } from "../../http";
+import Loader from "../../component/loader/loader";
 
 const headers = {
   sn: "S.N.",
@@ -21,8 +21,10 @@ const headers = {
 
 const Admission = () => {
   const [admissions, setAdmissions] = useState([]);
+  const [loadingAdmissions, setLoadingAdmissions] = useState(true);
 
   const fetchAdmissions = async () => {
+    setLoadingAdmissions(true);
     try {
       const response = await apiAuthenticated.get("/admission");
       if (response.status === 200) {
@@ -32,8 +34,18 @@ const Admission = () => {
       }
     } catch (error) {
       console.error("Error fetching admissions:", error);
+    } finally {
+      setLoadingAdmissions(false);
     }
   };
+
+  useEffect(() => {
+    fetchAdmissions();
+  }, []);
+
+  if (loadingAdmissions) {
+    return <Loader />;
+  }
 
   const deleteAdmission = async (admissionId) => {
     try {
@@ -51,10 +63,6 @@ const Admission = () => {
       console.error(error);
     }
   };
-
-  useEffect(() => {
-    fetchAdmissions();
-  }, []);
 
   return (
     <div className="min-h-screen p-8 bg-gray-100">

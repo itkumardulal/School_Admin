@@ -2,6 +2,8 @@ import { useState } from "react";
 import API from "../http";
 import { useNavigate } from "react-router-dom";
 import logo from '../assets/bhawagati.jpg'
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const Login = () => {
@@ -19,6 +21,8 @@ const navigate = useNavigate()
     });
   };
 
+
+
 const handleClick = async (e) => {
   e.preventDefault();
   try {
@@ -28,7 +32,7 @@ const handleClick = async (e) => {
       const role = response.data?.user?.role;
 
       if (!role) {
-        alert("Login successful, but role not found");
+        toast.warning("Login successful, but role not found");
         navigate("/login");
         return;
       }
@@ -37,21 +41,23 @@ const handleClick = async (e) => {
       } else if (role === 'superAdmin') {
         navigate('/super-admin');
       } else {
-        alert("Unrecognized role");
+        toast.error("Unrecognized role");
         navigate('/login');
       }
     } else {
-      alert('Login failed');
+      toast.error('Login failed');
     }
   } catch (error) {
-    alert(error?.response?.data?.message || 'Something went wrong');
+    toast.error(error?.response?.data?.message || 'Something went wrong');
   }
 };
+
 
 
    
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+     <ToastContainer position="top-center" autoClose={3000} />
       <div className="flex flex-col lg:flex-row w-full max-w-6xl shadow-2xl rounded-2xl overflow-hidden bg-white">
         {/* Left - Login Form */}
         <div className="w-full lg:w-1/2 p-10 flex items-center justify-center">

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { apiAuthenticated } from "../../http";
 import "react-toastify/dist/ReactToastify.css";
+import Loader from "../../component/loader/loader";
 
 const headers = {
   sn: "S.N.",
@@ -15,8 +16,10 @@ const headers = {
 
 const Message = () => {
   const [message, setMessage] = useState([]);
+  const [loadingMessages, setLoadingMessages] = useState(true);
 
   const fetchMessages = async () => {
+    setLoadingMessages(true);
     try {
       const response = await apiAuthenticated.get("/message");
       if (response.status === 200) {
@@ -26,8 +29,18 @@ const Message = () => {
       }
     } catch (error) {
       console.error("Error fetching messages:", error);
+    } finally {
+      setLoadingMessages(false);
     }
   };
+
+  useEffect(() => {
+    fetchMessages();
+  }, []);
+
+  if (loadingMessages) {
+    return <Loader />;
+  }
 
   const deleteMessage = async (messageId) => {
     try {
@@ -44,9 +57,7 @@ const Message = () => {
     }
   };
 
-  useEffect(() => {
-    fetchMessages();
-  }, []);
+
 
   return (
     <div className="min-h-screen p-8 bg-gray-100">

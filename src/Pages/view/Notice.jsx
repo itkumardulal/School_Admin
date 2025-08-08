@@ -1,69 +1,93 @@
 import React, { useEffect, useState } from "react";
 import {  apiAuthenticated } from "../../http";
-import { Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Link } from "react-router-dom";
 import Loader from "../../component/loader/loader";
 
-function ViewNews() {
-  const [selectedNews, setSelectedNews] = useState(null);
-  const [newsList, setNewsList] = useState([]);
-  const [loadingNews, setLoadingNews] = useState(true);
+function Notice() {
+  const [selectedNotice, setSelectedNotice] = useState(null);
+  const [notices, setNotices] = useState([]);
+   const [loadingNotice, setLoadingNotice] = useState(true);
 
-  const fetchNews = async () => {
-    setLoadingNews(true);
+  const fetchNotices = async () => {
+     setLoadingNotice(true);
     try {
-      const response = await apiAuthenticated.get("/news/admin");
+      const response = await apiAuthenticated.get("/notices/admin");
       if (response.status === 200) {
-        setNewsList(response.data.data);
+        setNotices(response.data.data);
       } else {
-        console.error("Failed to fetch news:");
+        console.error("Failed to fetch notices:");
       }
     } catch (error) {
-      console.error("Error fetching news:", error);
+      console.error("Error fetching notices:", error);
     } finally {
-      setLoadingNews(false);
+      setLoadingNotice(false);
     }
   };
 
   useEffect(() => {
-    fetchNews();
+    fetchNotices();
   }, []);
-
-  if (loadingNews) {
+  
+  if (loadingNotice) {
     return <Loader />;
   }
-  const deleteNews = async (newsId) => {
+
+  const handleDownload = (pdfUrl, pdfName = "document.pdf") => {
+    if (!pdfUrl) {
+      toast.error("No PDF available to download");
+      return;
+    }
+
+    fetch(pdfUrl)
+      .then((res) => res.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = pdfName;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch(() => {
+        toast.error("Error downloading file");
+      });
+  };
+
+  const deleteNotices = async (noticeId) => {
     try {
-      const response = await apiAuthenticated.delete(`/news/${newsId}`);
+      const response = await apiAuthenticated.delete(`/notices/${noticeId}`);
       if (response.status === 200) {
-        toast.success("News deleted successfully!");
-        setNewsList((prev) => prev.filter((news) => news.id !== newsId));
+        toast.success("Notice deleted successfully!");
+        setNotices((prev) => prev.filter((notice) => notice.id !== noticeId));
       } else {
         toast.error("Something went wrong");
       }
     } catch (error) {
-      toast.error("Error deleting news");
+      toast.error("Error deleting notice");
     }
   };
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-48px)] px-4 py-8 max-w-7xl mx-auto w-full">
-      <ToastContainer position="top-right" autoClose={1000} />
-      {!selectedNews ? (
+      <ToastContainer />
+      {!selectedNotice ? (
         <>
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">News</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Notice Board</h1>
             <p className="text-base text-gray-600 mt-2">
-              Explore the latest updates and announcements.
+              Click on a notice to view more details or download the file.
             </p>
           </div>
 
           <div className="space-y-6 flex-grow overflow-auto">
-            {newsList.length === 0 ? (
+            {notices.length === 0 ? (
               <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-6 flex flex-col justify-center items-center text-center">
                 <p className="text-blue-600 font-semibold text-lg mb-2">
-                  No news articles have been posted yet.
+                  No notices have been posted yet.
                 </p>
                 <p className="text-gray-600">
                   Please check back soon. New updates and announcements will
@@ -71,52 +95,51 @@ function ViewNews() {
                 </p>
               </div>
             ) : (
-              newsList.map((news) => (
+              notices.map((notice) => (
                 <div
-                  key={news.id}
-                  className="bg-white rounded-lg shadow-sm border border-gray-300 p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center hover:bg-gray-50 transition-colors"
+                  key={notice.id}
+                  className="bg-white rounded-lg shadow-sm border border-gray-300 p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center hover:bg-gray-50 transition-colors cursor-pointer"
+                  onClick={() => setSelectedNotice(notice)}
                 >
                   <div className="mb-4 sm:mb-0">
                     <p className="text-lg sm:text-xl font-semibold text-gray-900">
-                      {news.title}
+                      {notice.title}
                     </p>
                     <p className="text-sm text-gray-500 mt-1">
                       Published At:{" "}
-                      {new Date(news.createdAt).toLocaleDateString()}
+                      {new Date(notice.createdAt).toLocaleDateString()}
                     </p>
                   </div>
 
-                  <div className="flex space-x-3">
-                    {/* View Button */}
+                  <div className="flex space-x-3 items-center">
+                    {/* Download Button */}
                     <button
-                      onClick={() => setSelectedNews(news)}
-                      title="View"
-                      className="p-2 rounded-full bg-white group hover:bg-gray-200 transition-all"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDownload(
+                          notice.pdfUrl,
+                          notice.pdfName || "notice.pdf"
+                        );
+                      }}
+                      title="Download"
+                      className="p-2 rounded-full bg-white group transition-all duration-500 hover:bg-gray-200 flex items-center hover:cursor-pointer"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="w-7 h-7 text-gray-600 group-hover:text-black"
-                        fill="none"
+                        className="w-8 h-8 text-black group-hover:text-black"
+                        fill="currentColor"
                         viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                        />
+                        <path d="M12 16a1 1 0 0 1-.707-.293l-5-5a1 1 0 1 1 1.414-1.414L11 12.586V4a1 1 0 1 1 2 0v8.586l3.293-3.293a1 1 0 0 1 1.414 1.414l-5 5A1 1 0 0 1 12 16ZM4 20a1 1 0 0 1 0-2h16a1 1 0 1 1 0 2H4Z" />
                       </svg>
                     </button>
 
                     {/* Edit Button */}
-                    <Link to={`/admin/edit/news/${news.id}`}>
-                      <button className="p-2 rounded-full bg-white group hover:bg-indigo-600 transition-all">
+                    <Link to={`/admin/edit/notices/${notice.id}`}>
+                      <button
+                        className="p-2 rounded-full bg-white group transition-all duration-500 hover:bg-indigo-600 flex items-center"
+                        title="Edit"
+                      >
                         <svg
                           className=" w-6 h-6 cursor-pointer group-hover:fill-white"
                           viewBox="0 0 20 20"
@@ -134,16 +157,17 @@ function ViewNews() {
 
                     {/* Delete Button */}
                     <button
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         if (
                           window.confirm(
-                            "Are you sure you want to delete this news?"
+                            "Are you sure you want to delete this notice?"
                           )
                         ) {
-                          deleteNews(news.id);
+                          deleteNotices(notice.id);
                         }
                       }}
-                      className="p-2 rounded-full bg-white group hover:bg-red-600 transition-all"
+                      className="p-2 rounded-full bg-white group transition-all duration-500 hover:bg-red-600 flex items-center"
                       title="Delete"
                     >
                       <svg
@@ -167,12 +191,12 @@ function ViewNews() {
       ) : (
         <div className="space-y-6 flex-grow overflow-auto">
           <button
-            onClick={() => setSelectedNews(null)}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 transition-all"
+            onClick={() => setSelectedNotice(null)}
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 transition-all duration-200"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="w-6 h-6"
+              className="w-5 h-5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -184,39 +208,55 @@ function ViewNews() {
                 d="M15 19l-7-7 7-7"
               />
             </svg>
-            <span>Back to News</span>
+            <span>Back to Notices</span>
           </button>
 
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
-            {selectedNews.title}
+            {selectedNotice.title}
           </h2>
 
-          {selectedNews.imgUrl ? (
-            <div className="border border-gray-300 rounded-lg p-4 sm:p-6 bg-gray-50 flex justify-center">
-              <a
-                href={selectedNews.imgUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img
-                  src={selectedNews.imgUrl}
-                  alt={selectedNews.title}
-                  className="max-w-full h-auto sm:max-h-[500px] object-contain"
-                />
-              </a>
-            </div>
-          ) : (
-            <div className="border border-gray-300 rounded-lg p-4 sm:p-6 bg-gray-50 flex justify-center items-center min-h-[200px]">
-              <p className="text-gray-500 italic">No image to preview.</p>
-            </div>
-          )}
+          <div className="border border-gray-300 rounded-lg p-4 sm:p-6 bg-gray-50 flex justify-center">
+            {selectedNotice.pdfUrl ? (
+              <iframe
+                src={selectedNotice.pdfUrl}
+                className="w-full h-[400px] sm:h-[500px]"
+                title="PDF Preview"
+              />
+            ) : (
+              <p className="text-red-500">No PDF available to preview</p>
+            )}
+          </div>
 
-          <p className="text-base text-gray-700 whitespace-pre-wrap">
-            {selectedNews.description}
-          </p>
+          <div className="flex justify-end">
+            <button
+              onClick={() =>
+                handleDownload(
+                  selectedNotice.pdfUrl,
+                  selectedNotice.pdfName || "notice.pdf"
+                )
+              }
+              className="px-4 py-2 flex items-center space-x-2 bg-green-600 rounded-md text-sm font-medium text-white hover:bg-green-700"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-6 h-6"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M12 16a1 1 0 0 1-.707-.293l-5-5a1 1 0 1 1 1.414-1.414L11 12.586V4a1 1 0 1 1 2 0v8.586l3.293-3.293a1 1 0 0 1 1.414 1.414l-5 5A1 1 0 0 1 12 16ZM4 20a1 1 0 0 1 0-2h16a1 1 0 1 1 0 2H4Z" />
+              </svg>
+              <span>Download</span>
+            </button>
+          </div>
+
           <p className="text-sm text-gray-500 mt-4">
-            Published At:{" "}
-            {new Date(selectedNews.createdAt).toLocaleDateString()}
+            Published: {new Date(selectedNotice.createdAt).toLocaleDateString()}
+          </p>
+          <p className="text-gray-800 mt-4">
+            <strong>Description:</strong>
+          </p>
+          <p className="text-gray-700 mt-4 ml-2">
+            {selectedNotice.description}
           </p>
         </div>
       )}
@@ -224,4 +264,4 @@ function ViewNews() {
   );
 }
 
-export default ViewNews;
+export default Notice;

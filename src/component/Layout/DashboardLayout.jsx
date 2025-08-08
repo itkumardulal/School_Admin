@@ -30,6 +30,18 @@ const DashboardLayout = () => {
         />
       ),
     },
+    {
+      name: "Notices",
+      path: "/admin/add/notices",
+      icon: (
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M13 16h-1v-4h-1m0-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z"
+        />
+      ),
+    },
   ];
 
   const viewSubmenu = [
@@ -42,6 +54,18 @@ const DashboardLayout = () => {
           strokeLinejoin="round"
           strokeWidth="2"
           d="M19 21H5a2 2 0 01-2-2V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2z"
+        />
+      ),
+    },
+    {
+      name: "View Notice",
+      path: "/admin/view/notices",
+      icon: (
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+            d="M13 16h-1v-4h-1m0-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z"
         />
       ),
     },

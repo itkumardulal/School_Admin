@@ -19,6 +19,9 @@ import NewsEdit from "./Pages/edit/EditNews";
 import Admission from "./Pages/view/Admission";
 import Message from "./Pages/view/Message";
 import Home from "./component/Home";
+import NoticeForm from "./Pages/add/Notice";
+import Notice from "./Pages/view/Notice";
+import NoticeEdit from "./Pages/edit/EditNotice";
 
 const App = () => {
   const [role, setRole] = useState(null);
@@ -42,6 +45,9 @@ const App = () => {
           <Route path="add/news" element={<News />} />
          <Route path="view/news" element={<ViewNews/>} />
          <Route path="edit/news/:id" element={<NewsEdit/>} />
+         <Route path="add/notices" element= {<NoticeForm/>} />
+         <Route path= 'view/notices' element = {<Notice/>} />
+         <Route path="edit/notices/:id" element= {<NoticeEdit/>} />
          <Route path="view/admission" element={<Admission/>} />
          <Route path="view/message" element={<Message/>} />
         </Route>
