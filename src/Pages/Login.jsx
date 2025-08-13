@@ -26,7 +26,7 @@ const navigate = useNavigate()
 const handleClick = async (e) => {
   e.preventDefault();
   try {
-    const response = await API.post('login', data);
+    const response = await API.post('/login', data);
 
     if (response.status === 200) {
       const role = response.data?.user?.role;
