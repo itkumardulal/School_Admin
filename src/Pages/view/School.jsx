@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { apiAuthenticated } from "../../http";
 
@@ -49,6 +49,7 @@ const ViewSchool = () => {
 
   return (
     <div className="min-h-screen p-8 bg-gray-100">
+      <ToastContainer/>
       <h2 className="text-2xl font-semibold text-gray-800 mb-6 mt-10">
         School List
       </h2>
