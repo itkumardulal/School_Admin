@@ -153,6 +153,7 @@ const Login = () => {
           </div>
         </div>
 
+
         {/* Right - Logo Section */}
         <div className="w-full lg:w-1/2 flex flex-col items-center justify-center bg-gray-50 p-6 sm:p-10">
           <img src={logo1} alt="Logo" className="w-auto h-48 sm:h-auto mb-3 sm:mb-4" />
